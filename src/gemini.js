@@ -47,25 +47,26 @@ ${internalLinkPrompt}
 4. Yoast SEO Metadata (STRICT LIMITS):
    - slug: The primary focus keyword formatted as a URL slug (e.g., "primary-keyword-here").
    - focus_keyword: 2-4 words high search volume target keyword.
-   - meta_title: STRICTLY UNDER 60 CHARACTERS, click-worthy, includes focus keyword.
-   - meta_description: STRICTLY UNDER 150 CHARACTERS, includes focus keyword and emotional hook.
-   - tags: Array of 5-8 relevant tags.
-   - featured_image_search: A detailed Midjourney-style prompt for a beautiful, bright, professional cover photo. Do NOT generate dark or empty rooms.
+   - meta_title: STRICTLY UNDER 60 CHARACTERS.
+   - meta_description: STRICTLY UNDER 150 CHARACTERS.
+   - tags: Array of 5-8 relevant tags (comma separated).
+   - featured_image_prompt: A detailed Midjourney-style prompt for a beautiful, bright, professional cover photo. Do NOT generate dark or empty rooms.
    - featured_image_alt: Keyword alt text for cover.
 
-Respond ONLY with a valid, clean JSON object.
-JSON format schema:
-{
-  "title": "Article Title",
-  "slug": "focus-keyword-slug",
-  "focus_keyword": "primary focus keyword",
-  "meta_title": "SEO Meta Title (Under 60 chars)",
-  "meta_description": "SEO Meta Description (Under 150 chars)",
-  "tags": ["tag1", "tag2", "tag3"],
-  "featured_image_search": "detailed midjourney prompt for cover",
-  "featured_image_alt": "alt text for featured image",
-  "content_html": "<p>Article HTML content including h2, h3, tables, key takeaways, in-article image markers, FAQs, and FAQ schema</p>"
-}`;
+Respond ONLY with the following XML structure. Do NOT output markdown formatting like \`\`\`xml.
+<article>
+  <title>Article Title</title>
+  <slug>focus-keyword-slug</slug>
+  <focus_keyword>primary focus keyword</focus_keyword>
+  <meta_title>SEO Meta Title (Under 60 chars)</meta_title>
+  <meta_description>SEO Meta Description (Under 150 chars)</meta_description>
+  <tags>tag1, tag2, tag3</tags>
+  <featured_image_prompt>detailed midjourney prompt for cover</featured_image_prompt>
+  <featured_image_alt>alt text for featured image</featured_image_alt>
+  <content>
+    [Insert full HTML content here, including h2, h3, tables, key takeaways, in-article image markers, FAQs, and FAQ schema]
+  </content>
+</article>`;
 
   const modelsToTry = ['gemini-3.5-pro', 'gemini-3.5-flash', 'gemini-pro-latest', 'gemini-flash-latest'];
   let response = null;
@@ -80,7 +81,6 @@ JSON format schema:
         {
           contents: [{ parts: [{ text: prompt }] }],
           generationConfig: {
-            responseMimeType: "application/json",
             temperature: 0.7,
             maxOutputTokens: 8192
           }
@@ -102,54 +102,46 @@ JSON format schema:
     throw new Error(`All Gemini models failed: ${lastError?.message}`);
   }
 
-  // Robust JSON parsing: clean markdown and handle escaped quotes in HTML content
-  let cleaned = rawText.replace(/```json/gi, '').replace(/```/g, '').trim();
+  // XML Parser
+  const extractTag = (xml, tag) => {
+    const regex = new RegExp(`<${tag}>([\\s\\S]*?)</${tag}>`, 'i');
+    const match = xml.match(regex);
+    return match ? match[1].trim() : '';
+  };
 
-  try {
-    return JSON.parse(cleaned);
-  } catch (err) {
-    console.warn('[GEMINI] Direct JSON parse failed, attempting regex field extraction...');
-    // Fallback regex extractor for structured fields
-    const titleMatch = cleaned.match(/"title"\s*:\s*"([^"]+)"/);
-    const slugMatch = cleaned.match(/"slug"\s*:\s*"([^"]+)"/);
-    const focusMatch = cleaned.match(/"focus_keyword"\s*:\s*"([^"]+)"/);
-    const metaTitleMatch = cleaned.match(/"meta_title"\s*:\s*"([^"]+)"/);
-    const metaDescMatch = cleaned.match(/"meta_description"\s*:\s*"([^"]+)"/);
-    const featSearchMatch = cleaned.match(/"featured_image_search"\s*:\s*"([^"]+)"/);
-    const featAltMatch = cleaned.match(/"featured_image_alt"\s*:\s*"([^"]+)"/);
-    
-    // Extract content_html properly even if truncated
-    let contentHtml = '';
-    const contentStart = cleaned.indexOf('"content_html"');
+  const title = extractTag(rawText, 'title');
+  const slug = extractTag(rawText, 'slug');
+  const focus_keyword = extractTag(rawText, 'focus_keyword');
+  const meta_title = extractTag(rawText, 'meta_title');
+  const meta_description = extractTag(rawText, 'meta_description');
+  const tagsStr = extractTag(rawText, 'tags');
+  const featured_image_prompt = extractTag(rawText, 'featured_image_prompt');
+  const featured_image_alt = extractTag(rawText, 'featured_image_alt');
+  let contentHtml = extractTag(rawText, 'content');
+
+  // Fallback if truncation happens inside <content>
+  if (!contentHtml) {
+    const contentStart = rawText.indexOf('<content>');
     if (contentStart !== -1) {
-      const colonIndex = cleaned.indexOf(':', contentStart);
-      const firstQuote = cleaned.indexOf('"', colonIndex + 1);
-      if (firstQuote !== -1) {
-        let rawHtml = cleaned.substring(firstQuote + 1);
-        rawHtml = rawHtml.replace(/"]?\s*}?\s*$/, ''); // Remove trailing JSON chars
-        contentHtml = rawHtml
-          .replace(/\\n/g, '\n')
-          .replace(/\\"/g, '"')
-          .replace(/\\t/g, ' ');
-      }
+      contentHtml = rawText.substring(contentStart + 9).replace(/<\/article>$/, '').trim();
     }
-
-    if (!titleMatch || !contentHtml) {
-      throw new Error(`Failed to parse AI JSON response: ${err.message}`);
-    }
-
-    return {
-      title: titleMatch[1],
-      slug: slugMatch ? slugMatch[1] : topic.toLowerCase().replace(/[^a-z0-9]+/g, '-'),
-      focus_keyword: focusMatch ? focusMatch[1] : topic,
-      meta_title: metaTitleMatch ? metaTitleMatch[1] : titleMatch[1],
-      meta_description: metaDescMatch ? metaDescMatch[1] : titleMatch[1],
-      tags: [category, topic],
-      featured_image_search: featSearchMatch ? featSearchMatch[1] : `Cinematic bright photo of professionals working on ${topic}`,
-      featured_image_alt: featAltMatch ? featAltMatch[1] : topic,
-      content_html: contentHtml
-    };
   }
+
+  if (!title || !contentHtml) {
+    throw new Error(`Failed to parse AI XML response.`);
+  }
+
+  return {
+    title,
+    slug: slug || topic.toLowerCase().replace(/[^a-z0-9]+/g, '-'),
+    focus_keyword: focus_keyword || topic,
+    meta_title: meta_title || title,
+    meta_description: meta_description || title,
+    tags: tagsStr.split(',').map(t => t.trim()).filter(Boolean),
+    featured_image_search: featured_image_prompt || `Cinematic bright photo of professionals working on ${topic}`,
+    featured_image_alt: featured_image_alt || topic,
+    content_html: contentHtml
+  };
 }
 
 module.exports = { generateArticle };
