@@ -67,7 +67,7 @@ JSON format schema:
   "content_html": "<p>Article HTML content including h2, h3, tables, key takeaways, in-article image markers, FAQs, and FAQ schema</p>"
 }`;
 
-  const modelsToTry = ['gemini-3.5-flash', 'gemini-3.6-flash', 'gemini-flash-latest'];
+  const modelsToTry = ['gemini-1.5-pro', 'gemini-1.5-pro-latest', 'gemini-1.5-flash'];
   let response = null;
   let lastError = null;
 
