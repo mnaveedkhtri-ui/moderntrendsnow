@@ -17,11 +17,11 @@ async function fetchImageBuffer(searchQuery, seed = Math.floor(Math.random() * 1
   // Enforce photography styles to prevent blurry/plastic AI look
   const styleEnhancer = encodeURIComponent(", photorealistic photography, hyperrealistic, 8k resolution, highly detailed, sharp focus, cinematic lighting");
 
-  // Engine 1: Pollinations Flux Model with photorealistic photography parameters & unique seed
-  const fluxUrl = `https://image.pollinations.ai/prompt/${query}${styleEnhancer}?width=1280&height=720&model=flux&seed=${seed}&nologo=true`;
+  // Engine 1: Pollinations Auto Model (Most Stable)
+  const primaryUrl = `https://image.pollinations.ai/prompt/${query}${styleEnhancer}?width=1280&height=720&nologo=true`;
 
   try {
-    const response = await axios.get(fluxUrl, {
+    const response = await axios.get(primaryUrl, {
       responseType: 'arraybuffer',
       timeout: 60000,
       headers: { 'User-Agent': 'Mozilla/5.0' }
@@ -33,14 +33,14 @@ async function fetchImageBuffer(searchQuery, seed = Math.floor(Math.random() * 1
         contentType: response.headers['content-type'] || 'image/jpeg'
       };
     }
-  } catch (fluxErr) {
-    console.warn(`[IMAGE] Primary Flux engine timeout/fail for "${searchQuery}", trying high-res curated engine...`);
+  } catch (primaryErr) {
+    console.warn(`[IMAGE] Primary engine timeout/fail for "${searchQuery}", trying fallback...`);
   }
 
-  // Engine 2: Pollinations Turbo with high-speed photorealism
+  // Engine 2: Pollinations Fallback
   try {
-    const turboUrl = `https://image.pollinations.ai/prompt/${query}${styleEnhancer}?width=1280&height=720&model=turbo&seed=${seed}&nologo=true`;
-    const response = await axios.get(turboUrl, {
+    const fallbackUrl = `https://image.pollinations.ai/prompt/${query}?width=1280&height=720&nologo=true`;
+    const response = await axios.get(fallbackUrl, {
       responseType: 'arraybuffer',
       timeout: 40000,
       headers: { 'User-Agent': 'Mozilla/5.0' }
@@ -51,8 +51,8 @@ async function fetchImageBuffer(searchQuery, seed = Math.floor(Math.random() * 1
         contentType: response.headers['content-type'] || 'image/jpeg'
       };
     }
-  } catch (turboErr) {
-    console.warn('[IMAGE] Turbo engine failed, using direct standard fallback...');
+  } catch (fallbackErr) {
+    console.warn('[IMAGE] Fallback engine failed...');
   }
 
   // Engine 3: Topic-targeted Pollinations standard fallback (guaranteed fast)
