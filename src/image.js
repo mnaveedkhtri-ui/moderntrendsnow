@@ -15,7 +15,7 @@ async function fetchImageBuffer(searchQuery, seed = Math.floor(Math.random() * 1
   const query = cleanQuery(searchQuery);
 
   // Engine 1: Pollinations Flux Model with photorealistic photography parameters & unique seed
-  const fluxUrl = `https://image.pollinations.ai/prompt/high%20quality%20clean%20photography%20of%20${query}%20no%20text%20no%20words?width=1280&height=720&model=flux&seed=${seed}&nologo=true`;
+  const fluxUrl = `https://image.pollinations.ai/prompt/${query}%20photorealistic%20cinematic%20no%20text%20no%20watermark?width=1280&height=720&model=flux&seed=${seed}&nologo=true`;
 
   try {
     const response = await axios.get(fluxUrl, {
@@ -36,7 +36,7 @@ async function fetchImageBuffer(searchQuery, seed = Math.floor(Math.random() * 1
 
   // Engine 2: Pollinations Turbo with high-speed photorealism
   try {
-    const turboUrl = `https://image.pollinations.ai/prompt/clean%20minimalist%20photo%20of%20${query}%20no%20text?width=1280&height=720&model=turbo&seed=${seed}&nologo=true`;
+    const turboUrl = `https://image.pollinations.ai/prompt/${query}%20no%20text%20minimalist?width=1280&height=720&model=turbo&seed=${seed}&nologo=true`;
     const response = await axios.get(turboUrl, {
       responseType: 'arraybuffer',
       timeout: 20000,

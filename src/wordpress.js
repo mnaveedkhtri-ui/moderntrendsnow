@@ -109,7 +109,7 @@ async function getOrCreateCategory(categoryName) {
  * Process in-article image placeholders and replace with real WP media figures
  */
 async function processInArticleImages(contentHtml) {
-  const regex = /<!--\s*IN_ARTICLE_IMAGE:\s*(\{.*?\})\s*-->/g;
+  const regex = /<!--\s*IN_ARTICLE_IMAGE:\s*(\{[\s\S]*?\})\s*-->/g;
   let match;
   let matches = [];
 
@@ -156,7 +156,7 @@ async function processInArticleImages(contentHtml) {
 /**
  * Create a new Post in WordPress with Yoast SEO Meta
  */
-async function createPost({ title, contentHtml, categoryName, tags, featuredMediaId, yoastMeta, status = 'publish' }) {
+async function createPost({ title, slug, contentHtml, categoryName, tags, featuredMediaId, yoastMeta, status = 'publish' }) {
   const baseUrl = getBaseUrl();
   const auth = getAuthHeader();
 
@@ -164,6 +164,7 @@ async function createPost({ title, contentHtml, categoryName, tags, featuredMedi
 
   const postPayload = {
     title: title,
+    slug: slug,
     content: contentHtml,
     status: status,
     featured_media: featuredMediaId || 0,

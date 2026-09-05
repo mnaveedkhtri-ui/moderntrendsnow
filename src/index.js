@@ -104,6 +104,7 @@ async function runAutopilot() {
   const postStatus = process.argv.includes('--draft') ? 'draft' : 'publish';
   const postResult = await createPost({
     title: articleData.title,
+    slug: articleData.slug,
     contentHtml: finalContentHtml,
     categoryName: categoryName,
     tags: articleData.tags,

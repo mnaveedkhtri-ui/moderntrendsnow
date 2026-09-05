@@ -23,42 +23,45 @@ You MUST naturally and seamlessly link to 2 or 3 of these articles within the bo
   const prompt = `You are a world-class SEO content strategist and authoritative copywriter.
 Write an exceptionally comprehensive, 100% human-sounding, deep-dive article on the topic: "${topic}" in the category: "${category}".
 
-Follow these critical SEO requirements:
-1. Length: 1800 to 2400 words.
+Follow these critical requirements:
+1. Tone & Quality (PASS AI DETECTORS):
+   - Use a natural, conversational, highly expert human tone.
+   - DO NOT use robotic AI transition words (e.g., "Moreover", "In conclusion", "Dive in", "Delve", "Tapestry", "Crucial", "Vital").
+   - DO NOT use em-dashes (—). Use parentheses or standard commas instead.
+   - Keep sentences punchy, engaging, and readable.
 2. Search Intent & E-E-A-T:
    - Provide direct first-hand actionable insights.
    - Include 2-3 natural citations / external links to authoritative sources (e.g. Wikipedia, Statista, Harvard, NIH, Forbes) for Google trust signals.
 ${internalLinkPrompt}
-3. Structure:
+3. Structure & Dark Mode Compatibility:
    - Compelling, high-CTR H1 Title (include numbers, actionable hook, or year).
    - Hook introduction: Explain the problem, why it matters today, and what the reader will gain.
    - Key Takeaways Box (HTML styled callout box).
-   - 5 to 7 logical main sections with H2 tags.
-   - Specific subheadings with H3 tags.
-   - Bulleted lists and comparison / data breakdown table (HTML <table>).
-   - 3 COMPLETELY DISTINCT In-Article Image Placeholders under different H2 headings, formatted as:
-     <!-- IN_ARTICLE_IMAGE: {"keyword": "detailed distinct photographic scene", "alt": "Descriptive keyword-rich alt text", "caption": "Engaging descriptive caption"} -->
-     (Make sure every image marker has a totally DIFFERENT keyword prompt and visual theme).
-   - FAQ Section: 4-5 high-intent questions answered concisely with direct, helpful answers.
-   - FAQ Schema: Include JSON-LD Schema snippet (<script type="application/ld+json">...) for Google Rich Results.
-   - Conclusion with clear final actionable recommendation.
-4. Yoast SEO Metadata:
+   - 5 to 7 logical main sections with H2 tags. Bulleted lists and data breakdown tables.
+   - DARK MODE: Do NOT use hardcoded inline colors (e.g., style="color: #000" or style="background: white") in tables, divs, or any HTML. Ensure all elements are transparent/inherit by default to support website dark mode.
+   - 3 COMPLETELY DISTINCT In-Article Image Placeholders under different H2 headings, formatted exactly as:
+     <!-- IN_ARTICLE_IMAGE: {"keyword": "Highly detailed midjourney style prompt for a photorealistic 8k cinematic shot of...", "alt": "Descriptive keyword-rich alt text", "caption": "Engaging descriptive caption"} -->
+     (Make sure the 'keyword' is a physically descriptive Midjourney/Flux style prompt for realistic photography, NOT abstract words).
+   - FAQ Section: 4-5 high-intent questions answered concisely with FAQ Schema (JSON-LD).
+4. Yoast SEO Metadata (STRICT LIMITS):
+   - slug: The primary focus keyword formatted as a URL slug (e.g., "primary-keyword-here").
    - focus_keyword: 2-4 words high search volume target keyword.
-   - meta_title: Under 60 characters, click-worthy, includes focus keyword.
-   - meta_description: 140-155 characters, includes focus keyword and emotional hook.
+   - meta_title: STRICTLY UNDER 60 CHARACTERS, click-worthy, includes focus keyword.
+   - meta_description: STRICTLY UNDER 150 CHARACTERS, includes focus keyword and emotional hook.
    - tags: Array of 5-8 relevant tags.
-   - featured_image_search: Distinct visual description for cover photo.
+   - featured_image_search: A detailed Midjourney-style prompt for the cover photo.
    - featured_image_alt: Keyword alt text for cover.
 
-Respond ONLY with a valid, clean JSON object (no markdown code blocks, no backticks, no markdown wrapping).
+Respond ONLY with a valid, clean JSON object.
 JSON format schema:
 {
   "title": "Article Title",
+  "slug": "focus-keyword-slug",
   "focus_keyword": "primary focus keyword",
-  "meta_title": "SEO Meta Title",
-  "meta_description": "SEO Meta Description",
+  "meta_title": "SEO Meta Title (Under 60 chars)",
+  "meta_description": "SEO Meta Description (Under 150 chars)",
   "tags": ["tag1", "tag2", "tag3"],
-  "featured_image_search": "search keyword for featured image",
+  "featured_image_search": "detailed midjourney prompt for cover",
   "featured_image_alt": "alt text for featured image",
   "content_html": "<p>Article HTML content including h2, h3, tables, key takeaways, in-article image markers, FAQs, and FAQ schema</p>"
 }`;
@@ -106,6 +109,7 @@ JSON format schema:
     console.warn('[GEMINI] Direct JSON parse failed, attempting regex field extraction...');
     // Fallback regex extractor for structured fields
     const titleMatch = cleaned.match(/"title"\s*:\s*"([^"]+)"/);
+    const slugMatch = cleaned.match(/"slug"\s*:\s*"([^"]+)"/);
     const focusMatch = cleaned.match(/"focus_keyword"\s*:\s*"([^"]+)"/);
     const metaTitleMatch = cleaned.match(/"meta_title"\s*:\s*"([^"]+)"/);
     const metaDescMatch = cleaned.match(/"meta_description"\s*:\s*"([^"]+)"/);
@@ -133,6 +137,7 @@ JSON format schema:
 
     return {
       title: titleMatch[1],
+      slug: slugMatch ? slugMatch[1] : topic.toLowerCase().replace(/[^a-z0-9]+/g, '-'),
       focus_keyword: focusMatch ? focusMatch[1] : topic,
       meta_title: metaTitleMatch ? metaTitleMatch[1] : titleMatch[1],
       meta_description: metaDescMatch ? metaDescMatch[1] : titleMatch[1],
