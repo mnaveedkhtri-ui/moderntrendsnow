@@ -31,7 +31,7 @@ Follow these critical requirements:
    - Keep sentences punchy, engaging, and readable.
 2. Search Intent & E-E-A-T:
    - Provide direct first-hand actionable insights.
-   - Target Length: 1000 to 1500 words (Be concise but highly valuable).
+   - Target Length: Strictly 700 to 900 words. You MUST finish the article with a Conclusion and FAQs. Do NOT cut off early.
    - Include 2-3 natural citations / external links to authoritative sources (e.g. Wikipedia, Statista, Harvard, NIH, Forbes) for Google trust signals.
 ${internalLinkPrompt}
 3. Structure & Dark Mode Compatibility:
