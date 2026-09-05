@@ -118,15 +118,16 @@ JSON format schema:
     const featSearchMatch = cleaned.match(/"featured_image_search"\s*:\s*"([^"]+)"/);
     const featAltMatch = cleaned.match(/"featured_image_alt"\s*:\s*"([^"]+)"/);
     
-    // Extract content_html
+    // Extract content_html properly even if truncated
     let contentHtml = '';
     const contentStart = cleaned.indexOf('"content_html"');
     if (contentStart !== -1) {
       const colonIndex = cleaned.indexOf(':', contentStart);
       const firstQuote = cleaned.indexOf('"', colonIndex + 1);
-      const lastQuote = cleaned.lastIndexOf('"');
-      if (firstQuote !== -1 && lastQuote > firstQuote) {
-        contentHtml = cleaned.substring(firstQuote + 1, lastQuote)
+      if (firstQuote !== -1) {
+        let rawHtml = cleaned.substring(firstQuote + 1);
+        rawHtml = rawHtml.replace(/"]?\s*}?\s*$/, ''); // Remove trailing JSON chars
+        contentHtml = rawHtml
           .replace(/\\n/g, '\n')
           .replace(/\\"/g, '"')
           .replace(/\\t/g, ' ');
@@ -144,7 +145,7 @@ JSON format schema:
       meta_title: metaTitleMatch ? metaTitleMatch[1] : titleMatch[1],
       meta_description: metaDescMatch ? metaDescMatch[1] : titleMatch[1],
       tags: [category, topic],
-      featured_image_search: featSearchMatch ? featSearchMatch[1] : topic,
+      featured_image_search: featSearchMatch ? featSearchMatch[1] : `Cinematic bright photo of professionals working on ${topic}`,
       featured_image_alt: featAltMatch ? featAltMatch[1] : topic,
       content_html: contentHtml
     };
