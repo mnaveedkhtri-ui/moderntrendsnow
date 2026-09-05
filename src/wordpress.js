@@ -141,7 +141,14 @@ async function processInArticleImages(contentHtml) {
         caption: caption
       });
 
-      const figureHtml = '\n<figure class="wp-block-image size-large">\n  <img src="' + uploaded.sourceUrl + '" alt="' + alt + '" class="wp-image-' + uploaded.mediaId + '" loading="lazy" />\n  <figcaption>' + caption + '</figcaption>\n</figure>';
+      const figureHtml = `
+<!-- wp:image {"id":${uploaded.mediaId},"sizeSlug":"large","linkDestination":"none","className":"is-style-default"} -->
+<figure class="wp-block-image size-large is-style-default">
+  <img src="${uploaded.sourceUrl}" alt="${alt}" class="wp-image-${uploaded.mediaId}" loading="lazy" />
+  <figcaption class="wp-element-caption">${caption}</figcaption>
+</figure>
+<!-- /wp:image -->
+`;
 
       updatedHtml = updatedHtml.replace(item.fullMatch, figureHtml);
       index++;
