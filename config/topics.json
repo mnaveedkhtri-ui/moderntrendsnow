@@ -1,0 +1,84 @@
+{
+  "categories": [
+    {
+      "name": "Health and Wellness",
+      "slug": "health-wellness",
+      "subtopics": [
+        "science-backed morning routines for sustained energy",
+        "gut microbiome optimization for mental clarity",
+        "intermittent fasting protocols for longevity",
+        "evidence-based stress management and cortisol reduction",
+        "nutrition myths debunked by modern research",
+        "natural sleep architecture and rem sleep enhancement",
+        "anti-inflammatory diet guide for beginners",
+        "zone 2 cardio training benefits for heart health",
+        "mindfulness meditation techniques backed by neuroscience",
+        "hydration and electrolyte balance for peak physical performance"
+      ]
+    },
+    {
+      "name": "Technology and AI",
+      "slug": "technology-ai",
+      "subtopics": [
+        "generative ai workflow automation for small businesses",
+        "open-source llms vs proprietary models comparative guide",
+        "ai agent frameworks and the future of autonomous software",
+        "prompt engineering frameworks for maximum precision",
+        "edge ai computing transforming modern mobile devices",
+        "cybersecurity best practices in the age of artificial intelligence",
+        "machine learning tools every modern software engineer must know",
+        "the rise of multimodality in computer vision and speech models",
+        "ethical ai governance and responsible automation guidelines",
+        "cloud computing architecture modernization trends"
+      ]
+    },
+    {
+      "name": "Finance",
+      "slug": "finance",
+      "subtopics": [
+        "smart dividend growth investing strategy for passive income",
+        "emergency fund building strategy in uncertain economic times",
+        "dollar-cost averaging vs lump-sum index fund investing",
+        "how to build a tax-efficient retirement portfolio",
+        "credit score repair and rapid enhancement roadmap",
+        "real estate crowdfunding vs traditional rental property investments",
+        "budgeting frameworks: the 50/30/20 rule modernized",
+        "high-yield savings accounts and cash management strategies",
+        "cryptocurrency and digital asset allocation risk management",
+        "side-hustle revenue scaling and automated bookkeeping"
+      ]
+    },
+    {
+      "name": "Education",
+      "slug": "education",
+      "subtopics": [
+        "accelerated learning techniques: the feynman method explained",
+        "how to master self-directed online learning and skill acquisition",
+        "ai tools transforming modern academic research and note-taking",
+        "spaced repetition and active recall study systems",
+        "in-demand tech certifications that actually lead to hiring",
+        "critical thinking frameworks for the information overload era",
+        "future-proof career skills to develop over the next decade",
+        "speed reading techniques backed by cognitive science",
+        "project-based learning strategies for coding and engineering",
+        "effective time-blocking and deep-work study routines"
+      ]
+    },
+    {
+      "name": "Travel",
+      "slug": "travel",
+      "subtopics": [
+        "budget travel hacks to explore international destinations for cheap",
+        "digital nomad visa guide and best tax-friendly countries",
+        "hidden travel gems in southeast asia off the beaten path",
+        "solo travel survival guide: safety, packing, and navigation",
+        "credit card travel points and miles optimization masterclass",
+        "eco-friendly and sustainable travel practices for conscious explorers",
+        "best european cities for remote work and digital nomads",
+        "essential gear checklist for long-term international backpacking",
+        "how to travel internationally without getting hit with currency fees",
+        "top scenic train routes around the world worth the journey"
+      ]
+    }
+  ]
+}
