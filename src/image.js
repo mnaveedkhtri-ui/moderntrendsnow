@@ -4,7 +4,7 @@ const axios = require('axios');
  * Clean text for URL querying
  */
 function cleanQuery(str) {
-  return encodeURIComponent(String(str || 'scenic photography').replace(/[^a-zA-Z0-9 ]/g, '').trim());
+  return encodeURIComponent(String(str || 'scenic photography').trim());
 }
 
 /**
@@ -15,7 +15,7 @@ async function fetchImageBuffer(searchQuery, seed = Math.floor(Math.random() * 1
   const query = cleanQuery(searchQuery);
 
   // Engine 1: Pollinations Flux Model with photorealistic photography parameters & unique seed
-  const fluxUrl = `https://image.pollinations.ai/prompt/${query}%20photorealistic%20cinematic%20no%20text%20no%20watermark?width=1280&height=720&model=flux&seed=${seed}&nologo=true`;
+  const fluxUrl = `https://image.pollinations.ai/prompt/${query}%2C%20bright%20natural%20lighting%2C%20photorealistic%20cinematic%20no%20text%20no%20watermark?width=1280&height=720&model=flux&seed=${seed}&nologo=true`;
 
   try {
     const response = await axios.get(fluxUrl, {
