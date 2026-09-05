@@ -85,7 +85,7 @@ async function runAutopilot() {
   console.log('[AUTOPILOT] Generating and uploading Featured Cover Image...');
   const coverImageSearch = articleData.featured_image_search || articleData.focus_keyword;
   const coverImageData = await fetchImageBuffer(coverImageSearch);
-  const coverFilename = `featured-${Date.now()}.jpg`;
+  const coverFilename = `${articleData.slug}-featured.jpg`;
 
   const uploadedCover = await uploadMedia({
     buffer: coverImageData.buffer,

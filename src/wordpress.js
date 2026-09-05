@@ -132,7 +132,8 @@ async function processInArticleImages(contentHtml) {
 
       console.log('[WP] Generating & uploading in-article image ' + index + ' (Unique Seed: ' + seed + '): "' + query + '"...');
       const imgData = await fetchImageBuffer(query, seed);
-      const filename = 'in-post-' + Date.now() + '-' + index + '.jpg';
+      const cleanKeywordForFile = meta.alt ? meta.alt.substring(0, 40).toLowerCase().replace(/[^a-z0-9]+/g, '-') : 'in-post';
+      const filename = `${cleanKeywordForFile}-${index}.jpg`;
       const uploaded = await uploadMedia({
         buffer: imgData.buffer,
         filename,
