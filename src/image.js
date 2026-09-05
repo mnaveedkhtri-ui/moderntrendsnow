@@ -20,7 +20,7 @@ async function fetchImageBuffer(searchQuery, seed = Math.floor(Math.random() * 1
   try {
     const response = await axios.get(fluxUrl, {
       responseType: 'arraybuffer',
-      timeout: 25000,
+      timeout: 60000,
       headers: { 'User-Agent': 'Mozilla/5.0' }
     });
 
@@ -39,7 +39,7 @@ async function fetchImageBuffer(searchQuery, seed = Math.floor(Math.random() * 1
     const turboUrl = `https://image.pollinations.ai/prompt/${query}%20no%20text%20minimalist?width=1280&height=720&model=turbo&seed=${seed}&nologo=true`;
     const response = await axios.get(turboUrl, {
       responseType: 'arraybuffer',
-      timeout: 20000,
+      timeout: 40000,
       headers: { 'User-Agent': 'Mozilla/5.0' }
     });
     if (response.data && response.data.length > 5000) {
@@ -49,14 +49,14 @@ async function fetchImageBuffer(searchQuery, seed = Math.floor(Math.random() * 1
       };
     }
   } catch (turboErr) {
-    console.warn('[IMAGE] Turbo engine failed, using direct Unsplash source topic...');
+    console.warn('[IMAGE] Turbo engine failed, using direct standard fallback...');
   }
 
   // Engine 3: Topic-targeted Pollinations standard fallback (guaranteed fast)
   const fallbackUrl = `https://image.pollinations.ai/prompt/${query}?width=1280&height=720&seed=${seed}&nologo=true`;
   const fallbackResp = await axios.get(fallbackUrl, {
     responseType: 'arraybuffer',
-    timeout: 15000
+    timeout: 30000
   });
 
   return {

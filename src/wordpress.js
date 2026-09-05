@@ -130,6 +130,9 @@ async function processInArticleImages(contentHtml) {
       const caption = meta.caption || alt;
       const seed = Math.floor(Math.random() * 900000) + (index * 777);
 
+      console.log('[WP] Waiting 5 seconds to prevent rate limiting...');
+      await new Promise(r => setTimeout(r, 5000));
+
       console.log('[WP] Generating & uploading in-article image ' + index + ' (Unique Seed: ' + seed + '): "' + query + '"...');
       const imgData = await fetchImageBuffer(query, seed);
       const cleanKeywordForFile = meta.alt ? meta.alt.substring(0, 40).toLowerCase().replace(/[^a-z0-9]+/g, '-') : 'in-post';
