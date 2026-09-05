@@ -14,8 +14,11 @@ function cleanQuery(str) {
 async function fetchImageBuffer(searchQuery, seed = Math.floor(Math.random() * 1000000)) {
   const query = cleanQuery(searchQuery);
 
+  // Enforce photography styles to prevent blurry/plastic AI look
+  const styleEnhancer = encodeURIComponent(", photorealistic photography, hyperrealistic, 8k resolution, highly detailed, sharp focus, cinematic lighting");
+
   // Engine 1: Pollinations Flux Model with photorealistic photography parameters & unique seed
-  const fluxUrl = `https://image.pollinations.ai/prompt/${query}?width=1280&height=720&model=flux&seed=${seed}&nologo=true`;
+  const fluxUrl = `https://image.pollinations.ai/prompt/${query}${styleEnhancer}?width=1280&height=720&model=flux&seed=${seed}&nologo=true`;
 
   try {
     const response = await axios.get(fluxUrl, {
@@ -36,7 +39,7 @@ async function fetchImageBuffer(searchQuery, seed = Math.floor(Math.random() * 1
 
   // Engine 2: Pollinations Turbo with high-speed photorealism
   try {
-    const turboUrl = `https://image.pollinations.ai/prompt/${query}?width=1280&height=720&model=turbo&seed=${seed}&nologo=true`;
+    const turboUrl = `https://image.pollinations.ai/prompt/${query}${styleEnhancer}?width=1280&height=720&model=turbo&seed=${seed}&nologo=true`;
     const response = await axios.get(turboUrl, {
       responseType: 'arraybuffer',
       timeout: 40000,

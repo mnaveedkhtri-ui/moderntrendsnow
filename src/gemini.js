@@ -31,7 +31,7 @@ Follow these critical requirements:
    - Keep sentences punchy, engaging, and readable.
 2. Search Intent & E-E-A-T:
    - Provide direct first-hand actionable insights.
-   - Target Length: Strictly 700 to 900 words. You MUST finish the article with a Conclusion and FAQs. Do NOT cut off early.
+   - Target Length: Strictly 1000 to 1300 words. You MUST finish the article with a Conclusion and FAQs. Do NOT cut off early.
    - Include 2-3 natural citations / external links to authoritative sources (e.g. Wikipedia, Statista, Harvard, NIH, Forbes) for Google trust signals.
 ${internalLinkPrompt}
 3. Structure & Dark Mode Compatibility:
@@ -40,7 +40,7 @@ ${internalLinkPrompt}
    - Key Takeaways Box (HTML styled callout box).
    - 5 to 7 logical main sections with H2 tags. Bulleted lists and data breakdown tables.
    - DARK MODE: Do NOT use hardcoded inline colors (e.g., style="color: #000" or style="background: white") in tables, divs, or any HTML. Ensure all elements are transparent/inherit by default to support website dark mode.
-   - 3 COMPLETELY DISTINCT In-Article Image Placeholders under different H2 headings, formatted exactly as:
+   - EXACTLY 2 COMPLETELY DISTINCT In-Article Image Placeholders under different H2 headings, formatted exactly as:
      <!-- IN_ARTICLE_IMAGE: {"keyword": "Highly detailed midjourney style prompt for a beautiful, bright, well-lit, photorealistic 8k cinematic shot of...", "alt": "Descriptive keyword-rich alt text", "caption": "Engaging descriptive caption"} -->
      (CRITICAL: The 'keyword' must describe a visually stunning, bright, and professional scene. Do NOT generate dark rooms, boardrooms, or empty meeting tables. Focus on action, technology, people, or modern abstract representations).
    - FAQ Section: 4-5 high-intent questions answered concisely with FAQ Schema (JSON-LD).
