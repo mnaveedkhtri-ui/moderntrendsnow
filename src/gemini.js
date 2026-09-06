@@ -72,44 +72,52 @@ Respond ONLY with the following XML structure. Do NOT output markdown formatting
 </article>`;
 
   const modelsToTry = ['gemini-3.1-pro-preview', 'gemini-2.5-pro', 'gemini-pro-latest', 'gemini-3.5-flash'];
-  let response = null;
+  
+  let rawText = null;
   let lastError = null;
 
   for (const modelName of modelsToTry) {
-    try {
-      const url = `https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${apiKey}`;
-      console.log(`[GEMINI] Attempting generation with ${modelName}...`);
-      response = await axios.post(
-        url,
-        {
-          contents: [{ parts: [{ text: prompt }] }],
-          generationConfig: {
-            temperature: 0.7,
-            maxOutputTokens: 8192
-          }
-        },
-        { headers: { 'Content-Type': 'application/json' }, timeout: 300000 }
-      );
-      if (response?.data?.candidates?.[0]?.content?.parts?.[0]?.text) {
-        console.log(`[GEMINI] Successfully generated content using ${modelName}`);
-        break;
+    let retries = 3;
+    while (retries > 0) {
+      try {
+        const url = `https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${apiKey}`;
+        console.log(`[GEMINI] Attempting generation with ${modelName} (Retries left: ${retries - 1})...`);
+        const response = await axios.post(
+          url,
+          {
+            contents: [{ parts: [{ text: prompt }] }],
+            generationConfig: { temperature: 0.7, maxOutputTokens: 8192 }
+          },
+          { headers: { 'Content-Type': 'application/json' }, timeout: 300000 }
+        );
+        
+        rawText = response?.data?.candidates?.[0]?.content?.parts?.[0]?.text;
+        
+        if (rawText && rawText.includes('<title>') && rawText.includes('<content>')) {
+          console.log(`[GEMINI] Successfully generated valid XML content using ${modelName}`);
+          break; // Break retry loop
+        } else {
+          throw new Error("AI returned malformed or incomplete XML (Truncated before <content>).");
+        }
+      } catch (err) {
+        lastError = err;
+        console.warn(`[GEMINI] Model ${modelName} failed:`, err.response?.data?.error?.message || err.message);
+        retries--;
+        if (retries > 0) await new Promise(r => setTimeout(r, 10000)); // Wait 10s before retry
       }
-    } catch (err) {
-      lastError = err;
-      console.warn(`[GEMINI] Model ${modelName} failed, trying next...:`, err.response?.data?.error?.message || err.message);
     }
+    if (rawText && rawText.includes('<title>') && rawText.includes('<content>')) break; // Break model loop if successful
   }
 
-  const rawText = response?.data?.candidates?.[0]?.content?.parts?.[0]?.text;
-  if (!rawText) {
-    throw new Error(`All Gemini models failed: ${lastError?.message}`);
+  if (!rawText || !rawText.includes('<title>') || !rawText.includes('<content>')) {
+    throw new Error(`All Gemini models failed. Last error: ${lastError?.message}`);
   }
 
   // XML Parser
   const extractTag = (xml, tag) => {
     const regex = new RegExp(`<${tag}>([\\s\\S]*?)</${tag}>`, 'i');
     const match = xml.match(regex);
-    return match ? match[1].trim() : '';
+    return match ? match[1].trim() : null;
   };
 
   const title = extractTag(rawText, 'title');
@@ -131,6 +139,7 @@ Respond ONLY with the following XML structure. Do NOT output markdown formatting
   }
 
   if (!title || !contentHtml) {
+    console.error("RAW TEXT DUMP:", rawText);
     throw new Error(`Failed to parse AI XML response.`);
   }
 
