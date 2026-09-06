@@ -168,11 +168,21 @@ async function processInArticleImages(contentHtml) {
  * Create a new Post in WordPress with Yoast SEO Meta
  */
 async function getOrCreateTag(name) {
+  const baseUrl = getBaseUrl();
+  const auth = getAuthHeader();
   try {
-    const res = await wp.get(`/tags?search=${encodeURIComponent(name)}`);
-    if (res.data.length > 0) return res.data[0].id;
-    const newTag = await wp.post('/tags', { name });
-    return newTag.data.id;
+    const listResp = await axios.get(baseUrl + '/wp-json/wp/v2/tags?search=' + encodeURIComponent(name), {
+      headers: { 'Authorization': auth }
+    });
+    if (listResp.data && listResp.data.length > 0) {
+      return listResp.data[0].id;
+    }
+    const createResp = await axios.post(baseUrl + '/wp-json/wp/v2/tags', {
+      name: name
+    }, {
+      headers: { 'Authorization': auth }
+    });
+    return createResp.data.id;
   } catch (e) {
     console.warn(`[WP] Error creating tag ${name}:`, e.response?.data || e.message);
     return null;
