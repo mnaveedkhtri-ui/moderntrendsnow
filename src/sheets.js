@@ -53,6 +53,7 @@ async function getNextTopicFromSheet() {
           category,
           fromSheet: true
         };
+        }
       }
     }
 
