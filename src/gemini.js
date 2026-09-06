@@ -88,7 +88,7 @@ Respond ONLY with the following XML structure. Do NOT output markdown formatting
             maxOutputTokens: 8192
           }
         },
-        { headers: { 'Content-Type': 'application/json' }, timeout: 150000 }
+        { headers: { 'Content-Type': 'application/json' }, timeout: 300000 }
       );
       if (response?.data?.candidates?.[0]?.content?.parts?.[0]?.text) {
         console.log(`[GEMINI] Successfully generated content using ${modelName}`);
