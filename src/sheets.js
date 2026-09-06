@@ -40,12 +40,14 @@ async function getNextTopicFromSheet() {
 
     // Look for pending rows or keywords that have not been posted
     for (const row of records) {
-      const keyword = row.Keyword || row.keyword || row.Keywords || row.keywords || row.Topic || row.topic;
-      const category = row.Category || row.category || 'General';
-      const status = (row.Status || row.status || '').toLowerCase();
+      const keyword = (row.Keyword || row.keyword || row.Keywords || row.keywords || row.Topic || row.topic || '').trim();
+      const category = (row.Category || row.category || 'General').trim();
+      const status = (row.Status || row.status || '').toLowerCase().trim();
 
-      if (keyword && status !== 'published' && status !== 'done' && !posted.includes(keyword)) {
-        console.log(`[SHEETS] Selected target keyword from Google Sheet: "${keyword}" (Category: ${category})`);
+      if (keyword && status !== 'published' && status !== 'done') {
+        const isPosted = posted.some(p => p.toLowerCase().trim() === keyword.toLowerCase());
+        if (!isPosted) {
+          console.log(`[SHEETS] Selected target keyword from Google Sheet: "${keyword}" (Category: ${category})`);
         return {
           keyword,
           category,
