@@ -33,7 +33,7 @@ Follow these critical requirements:
    - Keep sentences punchy, engaging, and readable.
 2. Search Intent & E-E-A-T:
    - Provide direct first-hand actionable insights.
-   - Target Length: Strictly 1000 to 1300 words. You MUST finish the article with a Conclusion and FAQs. Do NOT cut off early.
+   - Target Length: STRICTLY 700 to 800 words maximum. You MUST finish the conclusion before reaching 800 words. Do NOT cut off early.
    - EXTERNAL LINKING: You MUST include EXACTLY 2 highly relevant external links to high-authority domains (e.g. Wikipedia, Statista, Harvard, Forbes, NIH) for SEO trust signals.
 ${internalLinkPrompt}
 
@@ -41,11 +41,11 @@ ${internalLinkPrompt}
    - Compelling, high-CTR H1 Title (include numbers, actionable hook, or year).
    - Hook introduction: Explain the problem, why it matters today, and what the reader will gain.
    - Key Takeaways Box (HTML styled callout box).
-   - 5 to 7 logical main sections with H2 tags. Bulleted lists and data breakdown tables.
+   - 4 to 5 logical main sections with H2 tags. Bulleted lists and data breakdown tables.
    - DARK MODE: Do NOT use hardcoded inline colors (e.g., style="color: #000" or style="background: white") in tables, divs, or any HTML. Ensure all elements are transparent/inherit by default to support website dark mode.
    - EXACTLY 2 COMPLETELY DISTINCT In-Article Image Placeholders under different H2 headings, formatted exactly as:
-     <!-- IN_ARTICLE_IMAGE: {"keyword": "keyword1,keyword2", "alt": "Descriptive keyword-rich alt text", "caption": "Engaging descriptive caption"} -->
-     (CRITICAL: The 'keyword' MUST BE 1 to 3 simple comma-separated words for a stock photo search, e.g. "beach,florida" or "office,laptop" or "students,class". Do NOT write a long prompt).
+     <!-- IN_ARTICLE_IMAGE: {"keyword": "single_broad_keyword", "alt": "Descriptive keyword-rich alt text", "caption": "Engaging descriptive caption"} -->
+     (CRITICAL: The 'keyword' MUST BE EXACTLY ONE simple, broad, single word for stock photos. E.g. "laptop" or "office" or "developer". Do NOT use multiple words or commas).
    - FAQ Section: 4-5 high-intent questions answered concisely. (Do NOT generate JSON-LD schema, it consumes too many tokens).
 4. Yoast SEO Metadata (STRICT LIMITS):
    - slug: The primary focus keyword formatted as a URL slug (e.g., "primary-keyword-here").
@@ -53,7 +53,7 @@ ${internalLinkPrompt}
    - meta_title: STRICTLY UNDER 60 CHARACTERS.
    - meta_description: STRICTLY UNDER 150 CHARACTERS.
    - tags: Array of 5-8 relevant tags (comma separated).
-   - featured_image_prompt: A detailed Midjourney-style prompt for a beautiful, bright, professional cover photo. Do NOT generate dark rooms, boardrooms, or empty meeting tables. Focus on action, technology, people, or modern abstract representations.
+   - featured_image_prompt: EXACTLY ONE simple broad keyword (e.g. "technology" or "finance").
    - featured_image_alt: Keyword alt text for cover.
 
 Respond ONLY with the following XML structure. Do NOT output markdown formatting like \`\`\`xml.
@@ -64,7 +64,7 @@ Respond ONLY with the following XML structure. Do NOT output markdown formatting
   <meta_title>SEO Meta Title (Under 60 chars)</meta_title>
   <meta_description>SEO Meta Description (Under 150 chars)</meta_description>
   <tags>tag1, tag2, tag3</tags>
-  <featured_image_prompt>2 or 3 comma-separated keywords for stock photo</featured_image_prompt>
+  <featured_image_prompt>single_broad_keyword</featured_image_prompt>
   <featured_image_alt>alt text for featured image</featured_image_alt>
   <content>
     [Insert full HTML content here, including h2, h3, tables, key takeaways, in-article image markers, and FAQs]
