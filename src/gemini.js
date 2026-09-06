@@ -33,7 +33,7 @@ Follow these critical requirements:
    - Keep sentences punchy, engaging, and readable.
 2. Search Intent & E-E-A-T:
    - Provide direct first-hand actionable insights.
-   - Target Length: Strictly 1000 to 1300 words. You MUST finish the article with a Conclusion and FAQs. Do NOT cut off early.
+   - Target Length: STRICTLY 800 to 850 words. Do NOT exceed 850 words. You MUST finish the article with a Conclusion and FAQs. It is CRITICAL that you do not cut off early.
    - EXTERNAL LINKING: You MUST include EXACTLY 2 highly relevant external links to high-authority domains (e.g. Wikipedia, Statista, Harvard, Forbes, NIH) for SEO trust signals.
 ${internalLinkPrompt}
 
