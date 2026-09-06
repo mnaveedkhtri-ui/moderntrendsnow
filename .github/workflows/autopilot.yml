@@ -2,10 +2,8 @@ name: WordPress AI SEO Autopilot (Daily 2 Posts)
 
 on:
   schedule:
-    # 06:00 UTC (11:00 AM PKT)
-    - cron: '0 6 * * *'
-    # 18:00 UTC (11:00 PM PKT)
-    - cron: '0 18 * * *'
+    - cron: '0 9 * * *'  # 2:00 PM Pakistan Time (09:00 UTC)
+    - cron: '0 10 * * *' # 3:00 PM Pakistan Time (10:00 UTC)
   workflow_dispatch:
 
 permissions:
