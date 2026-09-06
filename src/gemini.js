@@ -43,7 +43,7 @@ ${internalLinkPrompt}
    - EXACTLY 2 COMPLETELY DISTINCT In-Article Image Placeholders under different H2 headings, formatted exactly as:
      <!-- IN_ARTICLE_IMAGE: {"keyword": "Highly detailed midjourney style prompt for a beautiful, bright, well-lit, photorealistic 8k cinematic shot of...", "alt": "Descriptive keyword-rich alt text", "caption": "Engaging descriptive caption"} -->
      (CRITICAL: The 'keyword' must describe a visually stunning, bright, and professional scene. Do NOT generate dark rooms, boardrooms, or empty meeting tables. Focus on action, technology, people, or modern abstract representations).
-   - FAQ Section: 4-5 high-intent questions answered concisely with FAQ Schema (JSON-LD).
+   - FAQ Section: 4-5 high-intent questions answered concisely. (Do NOT generate JSON-LD schema, it consumes too many tokens).
 4. Yoast SEO Metadata (STRICT LIMITS):
    - slug: The primary focus keyword formatted as a URL slug (e.g., "primary-keyword-here").
    - focus_keyword: 2-4 words high search volume target keyword.
@@ -64,7 +64,7 @@ Respond ONLY with the following XML structure. Do NOT output markdown formatting
   <featured_image_prompt>detailed midjourney prompt for cover</featured_image_prompt>
   <featured_image_alt>alt text for featured image</featured_image_alt>
   <content>
-    [Insert full HTML content here, including h2, h3, tables, key takeaways, in-article image markers, FAQs, and FAQ schema]
+    [Insert full HTML content here, including h2, h3, tables, key takeaways, in-article image markers, and FAQs]
   </content>
 </article>`;
 
