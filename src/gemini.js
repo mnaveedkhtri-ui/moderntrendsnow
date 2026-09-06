@@ -10,14 +10,16 @@ async function generateArticle({ category, topic, existingPosts = [] }) {
   if (!apiKey) {
     throw new Error('GEMINI_API_KEY is not set in environment variables.');
   }
-
   let internalLinkPrompt = '';
   if (existingPosts && existingPosts.length > 0) {
-    const list = existingPosts.slice(0, 8).map(p => `- Title: "${p.title}" | URL: "${p.link}"`).join('\n');
-    internalLinkPrompt = `\nINTERNAL LINKING REQUIREMENT:
-Here are some existing published articles on our site:
-${list}
-You MUST naturally and seamlessly link to 2 or 3 of these articles within the body text using descriptive anchor text (e.g. <a href="URL">descriptive anchor text</a>).\n`;
+    const list = existingPosts.slice(0, 10).map(p => `- Title: "${p.title}" | URL: "${p.link}"`).join('\n   ');
+    internalLinkPrompt = `
+3. INTERNAL LINKING (STRICT):
+   - You MUST naturally weave EXACTLY ${Math.min(4, existingPosts.length)} internal links into the content using exact URLs from this list:
+   ${list}
+   - Use descriptive anchor text (e.g. <a href="URL">descriptive anchor text</a>).`;
+  } else {
+    internalLinkPrompt = `\n3. INTERNAL LINKING (STRICT):\n   - No internal links available yet.`;
   }
 
   const prompt = `You are a world-class SEO content strategist and authoritative copywriter.
@@ -32,9 +34,10 @@ Follow these critical requirements:
 2. Search Intent & E-E-A-T:
    - Provide direct first-hand actionable insights.
    - Target Length: Strictly 1000 to 1300 words. You MUST finish the article with a Conclusion and FAQs. Do NOT cut off early.
-   - Include 2-3 natural citations / external links to authoritative sources (e.g. Wikipedia, Statista, Harvard, NIH, Forbes) for Google trust signals.
+   - EXTERNAL LINKING: You MUST include EXACTLY 2 highly relevant external links to high-authority domains (e.g. Wikipedia, Statista, Harvard, Forbes, NIH) for SEO trust signals.
 ${internalLinkPrompt}
-3. Structure & Dark Mode Compatibility:
+
+4. Structure & Dark Mode Compatibility:
    - Compelling, high-CTR H1 Title (include numbers, actionable hook, or year).
    - Hook introduction: Explain the problem, why it matters today, and what the reader will gain.
    - Key Takeaways Box (HTML styled callout box).
