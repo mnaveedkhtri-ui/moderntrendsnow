@@ -31,7 +31,7 @@ Follow these critical requirements:
    - Keep sentences punchy, engaging, and readable.
 2. Search Intent & E-E-A-T:
    - Provide direct first-hand actionable insights.
-   - Target Length: Strictly 600 to 800 words. You MUST finish the article with a Conclusion and FAQs. Do NOT cut off early.
+   - Target Length: Strictly 1000 to 1300 words. You MUST finish the article with a Conclusion and FAQs. Do NOT cut off early.
    - Include 2-3 natural citations / external links to authoritative sources (e.g. Wikipedia, Statista, Harvard, NIH, Forbes) for Google trust signals.
 ${internalLinkPrompt}
 3. Structure & Dark Mode Compatibility:
@@ -68,7 +68,7 @@ Respond ONLY with the following XML structure. Do NOT output markdown formatting
   </content>
 </article>`;
 
-  const modelsToTry = ['gemini-3.5-pro', 'gemini-3.5-flash', 'gemini-pro-latest', 'gemini-flash-latest'];
+  const modelsToTry = ['gemini-3.1-pro-preview', 'gemini-2.5-pro', 'gemini-pro-latest', 'gemini-3.5-flash'];
   let response = null;
   let lastError = null;
 

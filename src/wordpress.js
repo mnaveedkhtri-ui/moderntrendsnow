@@ -167,11 +167,33 @@ async function processInArticleImages(contentHtml) {
 /**
  * Create a new Post in WordPress with Yoast SEO Meta
  */
+async function getOrCreateTag(name) {
+  try {
+    const res = await wp.get(`/tags?search=${encodeURIComponent(name)}`);
+    if (res.data.length > 0) return res.data[0].id;
+    const newTag = await wp.post('/tags', { name });
+    return newTag.data.id;
+  } catch (e) {
+    console.warn(`[WP] Error creating tag ${name}:`, e.response?.data || e.message);
+    return null;
+  }
+}
+
 async function createPost({ title, slug, contentHtml, categoryName, tags, featuredMediaId, yoastMeta, status = 'publish' }) {
   const baseUrl = getBaseUrl();
   const auth = getAuthHeader();
 
   const categoryId = await getOrCreateCategory(categoryName);
+  
+  const tagIds = [];
+  if (tags && tags.length > 0) {
+    console.log(`[WP] Creating/Linking ${tags.length} SEO Tags...`);
+    for (const tag of tags) {
+      if (!tag) continue;
+      const tId = await getOrCreateTag(tag);
+      if (tId) tagIds.push(tId);
+    }
+  }
 
   const postPayload = {
     title: title,
@@ -180,6 +202,7 @@ async function createPost({ title, slug, contentHtml, categoryName, tags, featur
     status: status,
     featured_media: featuredMediaId || 0,
     categories: categoryId ? [categoryId] : [],
+    tags: tagIds,
     meta: {
       _yoast_wpseo_title: yoastMeta.meta_title,
       _yoast_wpseo_metadesc: yoastMeta.meta_description,
