@@ -1,10 +1,31 @@
 const axios = require('axios');
+const sharp = require('sharp');
 
 /**
  * Clean text for URL querying
  */
-function cleanQuery(str) {
-  return encodeURIComponent(String(str || 'scenic photography').trim());
+function cleanQuery(query) {
+  try {
+    const obj = JSON.parse(query);
+    return obj.keyword || query;
+  } catch (e) {
+    return String(query || 'scenic photography');
+  }
+}
+
+/**
+ * Use sharp to crop the image to exactly 16:9 (1280x720)
+ */
+async function processImage(buffer) {
+  return await sharp(buffer)
+    .resize({
+      width: 1280,
+      height: 720,
+      fit: 'cover',
+      position: 'center'
+    })
+    .jpeg({ quality: 90 })
+    .toBuffer();
 }
 
 /**
@@ -12,48 +33,58 @@ function cleanQuery(str) {
  * Uses multiple reliable photo engines with unique seeds to ensure NO DUPLICATES
  */
 async function fetchImageBuffer(searchQuery, seed = Math.floor(Math.random() * 1000000)) {
-  // Append quality modifiers to ensure the AI generates a sharp image
-  const enhancedQuery = `${searchQuery}, 8k resolution, ultra detailed, sharp focus, photorealistic, professional photography`;
-  const query = encodeURIComponent(enhancedQuery.substring(0, 800)); // Cap length just in case
+  const pixabayKey = '57489676-b13e0fe261e37ca2f22f32abb';
   
-  // Use Pollinations AI. 
-  // CRITICAL: We use 1024x1024 because the free tier models (sana/flux) natively output square images.
-  // Forcing them to 1920x1080 causes severe compression and blurriness. 
-  // Square images are perfectly fine for WordPress featured images and in-article content.
-  const primaryUrl = `https://image.pollinations.ai/prompt/${query}?width=1024&height=1024&model=flux&seed=${seed}&nologo=true`;
-
-  console.log(`[IMAGE] Generating AI Image via Pollinations...`);
-  
-  try {
-    const primaryRes = await axios.get(primaryUrl, {
-      responseType: 'arraybuffer',
-      timeout: 45000, // AI generation can take a while
-      headers: { 'User-Agent': 'Mozilla/5.0' }
-    });
-    
-    if (primaryRes.data && primaryRes.data.length > 5000) {
-      return {
-        buffer: Buffer.from(primaryRes.data),
-        contentType: primaryRes.headers['content-type'] || 'image/jpeg'
-      };
-    }
-  } catch (primaryErr) {
-    console.warn(`[IMAGE] Pollinations failed, trying fallback...`);
+  // Clean query for Pixabay
+  let query = cleanQuery(searchQuery).replace(/[^a-zA-Z0-9\s]/g, ' ').trim().replace(/\s+/g, '+');
+  if (query.length > 50) {
+    query = query.split('+').slice(0, 2).join('+'); // Keep it simple to 1-2 words for best results
   }
 
-  // Engine 2: Picsum Fallback (Random High Quality Professional Photo)
+  // Engine 1: Pixabay (High Quality 16:9 Real Stock Photos)
+  console.log(`[IMAGE] Fetching from Pixabay for keyword: "${query}"...`);
   try {
-    const fallbackUrl = `https://picsum.photos/seed/${seed}/1024/1024`;
-    console.log(`[IMAGE] Fetching fallback from Picsum...`);
+    const searchUrl = `https://pixabay.com/api/?key=${pixabayKey}&q=${query}&image_type=photo&orientation=horizontal&safesearch=true&per_page=20`;
+    const searchRes = await axios.get(searchUrl, { timeout: 15000 });
+    
+    if (searchRes.data && searchRes.data.hits && searchRes.data.hits.length > 0) {
+      // Pick a random image from the results using the seed
+      const randomIndex = seed % searchRes.data.hits.length;
+      const imageUrl = searchRes.data.hits[randomIndex].largeImageURL;
+      
+      console.log(`[IMAGE] Pixabay found photo -> fetching...`);
+      const primaryRes = await axios.get(imageUrl, {
+        responseType: 'arraybuffer',
+        timeout: 45000,
+        headers: { 'User-Agent': 'Mozilla/5.0' }
+      });
+      
+      if (primaryRes.data && primaryRes.data.length > 5000) {
+        const processedBuffer = await processImage(Buffer.from(primaryRes.data));
+        return {
+          buffer: processedBuffer,
+          contentType: 'image/jpeg'
+        };
+      }
+    }
+  } catch (primaryErr) {
+    console.warn(`[IMAGE] Pixabay failed or found no results for "${query}", trying fallback...`);
+  }
+
+  // Engine 2: Picsum Fallback (Random High Quality 16:9 Professional Photo)
+  try {
+    const fallbackUrl = `https://picsum.photos/seed/${seed}/1280/720`;
+    console.log(`[IMAGE] Fetching fallback 16:9 photo from Picsum...`);
     const response = await axios.get(fallbackUrl, {
       responseType: 'arraybuffer',
       timeout: 20000,
       headers: { 'User-Agent': 'Mozilla/5.0' }
     });
     if (response.data && response.data.length > 5000) {
+      const processedBuffer = await processImage(Buffer.from(response.data));
       return {
-        buffer: Buffer.from(response.data),
-        contentType: response.headers['content-type'] || 'image/jpeg'
+        buffer: processedBuffer,
+        contentType: 'image/jpeg'
       };
     }
   } catch (fallbackErr) {
