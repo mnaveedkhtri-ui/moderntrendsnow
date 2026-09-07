@@ -12,19 +12,22 @@ function cleanQuery(str) {
  * Uses multiple reliable photo engines with unique seeds to ensure NO DUPLICATES
  */
 async function fetchImageBuffer(searchQuery, seed = Math.floor(Math.random() * 1000000)) {
-  let query = cleanQuery(searchQuery).replace(/[^a-zA-Z0-9]/g, ''); // Extract only the single broad keyword
+  // Append quality modifiers to ensure the AI generates a sharp image
+  const enhancedQuery = `${searchQuery}, 8k resolution, ultra detailed, sharp focus, photorealistic, professional photography`;
+  const query = encodeURIComponent(enhancedQuery.substring(0, 800)); // Cap length just in case
   
-  if (query.length > 20) {
-    query = 'technology'; // Fallback to a very safe broad keyword if Gemini messes up
-  }
+  // Use Pollinations AI. 
+  // CRITICAL: We use 1024x1024 because the free tier models (sana/flux) natively output square images.
+  // Forcing them to 1920x1080 causes severe compression and blurriness. 
+  // Square images are perfectly fine for WordPress featured images and in-article content.
+  const primaryUrl = `https://image.pollinations.ai/prompt/${query}?width=1024&height=1024&model=flux&seed=${seed}&nologo=true`;
 
-  // Engine 1: LoremFlickr (Real Stock Photos using a single broad keyword)
+  console.log(`[IMAGE] Generating AI Image via Pollinations...`);
+  
   try {
-    const primaryUrl = `https://loremflickr.com/1280/720/${query}?lock=${seed}`;
-    console.log(`[IMAGE] Fetching from LoremFlickr for keyword: "${query}"...`);
     const primaryRes = await axios.get(primaryUrl, {
       responseType: 'arraybuffer',
-      timeout: 20000,
+      timeout: 45000, // AI generation can take a while
       headers: { 'User-Agent': 'Mozilla/5.0' }
     });
     
@@ -35,12 +38,12 @@ async function fetchImageBuffer(searchQuery, seed = Math.floor(Math.random() * 1
       };
     }
   } catch (primaryErr) {
-    console.warn(`[IMAGE] LoremFlickr failed for "${query}", trying fallback...`);
+    console.warn(`[IMAGE] Pollinations failed, trying fallback...`);
   }
 
   // Engine 2: Picsum Fallback (Random High Quality Professional Photo)
   try {
-    const fallbackUrl = `https://picsum.photos/seed/${seed}/1280/720`;
+    const fallbackUrl = `https://picsum.photos/seed/${seed}/1024/1024`;
     console.log(`[IMAGE] Fetching fallback from Picsum...`);
     const response = await axios.get(fallbackUrl, {
       responseType: 'arraybuffer',

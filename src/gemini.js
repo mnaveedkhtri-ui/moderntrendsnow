@@ -44,8 +44,8 @@ ${internalLinkPrompt}
    - 4 to 5 logical main sections with H2 tags. Bulleted lists and data breakdown tables.
    - DARK MODE: Do NOT use hardcoded inline colors (e.g., style="color: #000" or style="background: white") in tables, divs, or any HTML. Ensure all elements are transparent/inherit by default to support website dark mode.
    - EXACTLY 2 COMPLETELY DISTINCT In-Article Image Placeholders under different H2 headings, formatted exactly as:
-     <!-- IN_ARTICLE_IMAGE: {"keyword": "single_broad_keyword", "alt": "Descriptive keyword-rich alt text", "caption": "Engaging descriptive caption"} -->
-     (CRITICAL: The 'keyword' MUST BE EXACTLY ONE simple, broad, single word for stock photos. E.g. "laptop" or "office" or "developer". Do NOT use multiple words or commas).
+     <!-- IN_ARTICLE_IMAGE: {"keyword": "Highly detailed midjourney style prompt for a beautiful, bright, well-lit, photorealistic 8k cinematic shot of...", "alt": "Descriptive keyword-rich alt text", "caption": "Engaging descriptive caption"} -->
+     (CRITICAL: The 'keyword' must describe a visually stunning, bright, and professional scene. Do NOT generate dark rooms, boardrooms, or empty meeting tables. Focus on action, technology, people, or modern abstract representations).
    - FAQ Section: 4-5 high-intent questions answered concisely. (Do NOT generate JSON-LD schema, it consumes too many tokens).
 4. Yoast SEO Metadata (STRICT LIMITS):
    - slug: The primary focus keyword formatted as a URL slug (e.g., "primary-keyword-here").
@@ -53,7 +53,7 @@ ${internalLinkPrompt}
    - meta_title: STRICTLY UNDER 60 CHARACTERS.
    - meta_description: STRICTLY UNDER 150 CHARACTERS.
    - tags: Array of 5-8 relevant tags (comma separated).
-   - featured_image_prompt: EXACTLY ONE simple broad keyword (e.g. "technology" or "finance").
+   - featured_image_prompt: A detailed Midjourney-style prompt for a beautiful, bright, professional cover photo. Do NOT generate dark rooms, boardrooms, or empty meeting tables. Focus on action, technology, people, or modern abstract representations.
    - featured_image_alt: Keyword alt text for cover.
 
 Respond ONLY with the following XML structure. Do NOT output markdown formatting like \`\`\`xml.
@@ -64,7 +64,7 @@ Respond ONLY with the following XML structure. Do NOT output markdown formatting
   <meta_title>SEO Meta Title (Under 60 chars)</meta_title>
   <meta_description>SEO Meta Description (Under 150 chars)</meta_description>
   <tags>tag1, tag2, tag3</tags>
-  <featured_image_prompt>single_broad_keyword</featured_image_prompt>
+  <featured_image_prompt>detailed midjourney prompt for cover</featured_image_prompt>
   <featured_image_alt>alt text for featured image</featured_image_alt>
   <content>
     [Insert full HTML content here, including h2, h3, tables, key takeaways, in-article image markers, and FAQs]
