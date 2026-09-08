@@ -33,42 +33,36 @@ async function processImage(buffer) {
  * Uses multiple reliable photo engines with unique seeds to ensure NO DUPLICATES
  */
 async function fetchImageBuffer(searchQuery, seed = Math.floor(Math.random() * 1000000)) {
-  const pixabayKey = '57489676-b13e0fe261e37ca2f22f32abb';
+  // Use Pollinations AI for highly relevant, context-aware images
+  const enhancedQuery = `${searchQuery}, 8k resolution, ultra detailed, sharp focus, photorealistic, cinematic lighting`;
+  const query = encodeURIComponent(enhancedQuery.substring(0, 800)); 
   
-  // Clean query for Pixabay
-  let query = cleanQuery(searchQuery).replace(/[^a-zA-Z0-9\s]/g, ' ').trim().replace(/\s+/g, '+');
-  if (query.length > 50) {
-    query = query.split('+').slice(0, 2).join('+'); // Keep it simple to 1-2 words for best results
-  }
+  // Request 1280x720. Pollinations might return 1024x576 for free tier, but our sharp processor will handle it.
+  const primaryUrl = `https://image.pollinations.ai/prompt/${query}?width=1280&height=720&model=flux&seed=${seed}&nologo=true`;
 
-  // Engine 1: Pixabay (High Quality 16:9 Real Stock Photos)
-  console.log(`[IMAGE] Fetching from Pixabay for keyword: "${query}"...`);
+  console.log(`[IMAGE] Generating AI Image via Pollinations for perfect context match...`);
   try {
-    const searchUrl = `https://pixabay.com/api/?key=${pixabayKey}&q=${query}&image_type=photo&orientation=horizontal&safesearch=true&per_page=20`;
-    const searchRes = await axios.get(searchUrl, { timeout: 15000 });
+    const primaryRes = await axios.get(primaryUrl, {
+      responseType: 'arraybuffer',
+      timeout: 60000, 
+      headers: { 'User-Agent': 'Mozilla/5.0' }
+    });
     
-    if (searchRes.data && searchRes.data.hits && searchRes.data.hits.length > 0) {
-      // Pick a random image from the results using the seed
-      const randomIndex = seed % searchRes.data.hits.length;
-      const imageUrl = searchRes.data.hits[randomIndex].largeImageURL;
-      
-      console.log(`[IMAGE] Pixabay found photo -> fetching...`);
-      const primaryRes = await axios.get(imageUrl, {
-        responseType: 'arraybuffer',
-        timeout: 45000,
-        headers: { 'User-Agent': 'Mozilla/5.0' }
-      });
-      
-      if (primaryRes.data && primaryRes.data.length > 5000) {
-        const processedBuffer = await processImage(Buffer.from(primaryRes.data));
-        return {
-          buffer: processedBuffer,
-          contentType: 'image/jpeg'
-        };
-      }
+    if (primaryRes.data && primaryRes.data.length > 5000) {
+      console.log(`[IMAGE] AI Image generated, enhancing resolution...`);
+      // Sharp will resize to perfect 16:9 1280x720 and save with 100% JPEG quality
+      const processedBuffer = await sharp(Buffer.from(primaryRes.data))
+        .resize({ width: 1280, height: 720, fit: 'cover', position: 'center' })
+        .jpeg({ quality: 100 })
+        .toBuffer();
+        
+      return {
+        buffer: processedBuffer,
+        contentType: 'image/jpeg'
+      };
     }
   } catch (primaryErr) {
-    console.warn(`[IMAGE] Pixabay failed or found no results for "${query}", trying fallback...`);
+    console.warn(`[IMAGE] Pollinations failed for "${searchQuery}", trying fallback...`);
   }
 
   // Engine 2: Picsum Fallback (Random High Quality 16:9 Professional Photo)
