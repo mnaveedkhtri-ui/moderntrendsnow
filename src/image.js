@@ -37,8 +37,9 @@ async function fetchImageBuffer(searchQuery, seed = Math.floor(Math.random() * 1
   const enhancedQuery = `${searchQuery}, 8k resolution, ultra detailed, sharp focus, photorealistic, cinematic lighting`;
   const query = encodeURIComponent(enhancedQuery.substring(0, 800)); 
   
-  // Request 1280x720. Pollinations might return 1024x576 for free tier, but our sharp processor will handle it.
-  const primaryUrl = `https://image.pollinations.ai/prompt/${query}?width=1280&height=720&model=flux&seed=${seed}&nologo=true`;
+  // Request 1024x1024 (Square) to prevent the AI from squashing/stretching the image.
+  // Our sharp processor will then cleanly crop it to 1280x720 (16:9).
+  const primaryUrl = `https://image.pollinations.ai/prompt/${query}?width=1024&height=1024&model=flux&seed=${seed}&nologo=true`;
 
   console.log(`[IMAGE] Generating AI Image via Pollinations for perfect context match...`);
   try {
