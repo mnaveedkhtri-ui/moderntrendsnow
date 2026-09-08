@@ -33,7 +33,7 @@ Follow these critical requirements:
    - Keep sentences punchy, engaging, and readable.
 2. Search Intent & E-E-A-T:
    - Provide direct first-hand actionable insights.
-   - Target Length: STRICTLY 900 to 1100 words maximum. You MUST finish the conclusion before reaching 1100 words. Do NOT cut off early.
+   - Target Length: 800 to 1000 words. (CRITICAL: You MUST finish the article and output the closing </article> tag. If you cannot fit everything, make the article shorter! NEVER output incomplete sentences or truncate the XML. Flash models truncate easily, so be concise if needed).
    - EXTERNAL LINKING: You MUST include EXACTLY 2 highly relevant external links to high-authority domains (e.g. Wikipedia, Statista, Harvard, Forbes, NIH) for SEO trust signals.
 ${internalLinkPrompt}
 
@@ -94,11 +94,11 @@ Respond ONLY with the following XML structure. Do NOT output markdown formatting
         
         rawText = response?.data?.candidates?.[0]?.content?.parts?.[0]?.text;
         
-        if (rawText && rawText.includes('<title>') && rawText.includes('<content>')) {
+        if (rawText && rawText.includes('<title>') && rawText.includes('</article>')) {
           console.log(`[GEMINI] Successfully generated valid XML content using ${modelName}`);
           break; // Break retry loop
         } else {
-          throw new Error("AI returned malformed or incomplete XML (Truncated before <content>).");
+          throw new Error("AI returned malformed or incomplete XML (Truncated before </article>).");
         }
       } catch (err) {
         lastError = err;
@@ -107,10 +107,10 @@ Respond ONLY with the following XML structure. Do NOT output markdown formatting
         if (retries > 0) await new Promise(r => setTimeout(r, 10000)); // Wait 10s before retry
       }
     }
-    if (rawText && rawText.includes('<title>') && rawText.includes('<content>')) break; // Break model loop if successful
+    if (rawText && rawText.includes('<title>') && rawText.includes('</article>')) break; // Break model loop if successful
   }
 
-  if (!rawText || !rawText.includes('<title>') || !rawText.includes('<content>')) {
+  if (!rawText || !rawText.includes('<title>') || !rawText.includes('</article>')) {
     throw new Error(`All Gemini models failed. Last error: ${lastError?.message}`);
   }
 
