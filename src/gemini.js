@@ -41,13 +41,13 @@ ${internalLinkPrompt}
    - Compelling, high-CTR H1 Title (include numbers, actionable hook, or year).
    - Hook introduction: Explain the problem, why it matters today, and what the reader will gain.
    - Key Takeaways Box (HTML styled callout box).
-   - 4 to 5 logical main sections with H2 tags. Bulleted lists and data breakdown tables.
+   - Structure: 4 to 5 logical main sections with H2 tags. Use nested H3 tags inside these sections for deep SEO structure. Include bulleted lists and data breakdown tables.
    - DARK MODE: Do NOT use hardcoded inline colors (e.g., style="color: #000" or style="background: white") in tables, divs, or any HTML. Ensure all elements are transparent/inherit by default to support website dark mode.
    - EXACTLY 2 COMPLETELY DISTINCT In-Article Image Placeholders under different H2 headings, formatted exactly as:
      <!-- IN_ARTICLE_IMAGE: {"keyword": "Highly detailed midjourney style prompt for a beautiful, bright, well-lit, photorealistic 8k cinematic shot of...", "alt": "Descriptive keyword-rich alt text", "caption": "Engaging descriptive caption"} -->
      (CRITICAL: The 'keyword' must describe a visually stunning, context-specific scene perfectly matching the heading. DO NOT prompt for crowds or human faces (they will look distorted). Focus on objects, environments, technology, abstract representations, or over-the-shoulder perspectives. Do NOT generate dark rooms).
    - Conclusion: You MUST include a strong H2 Conclusion section wrapping up the article. This MUST be placed BEFORE the FAQ section.
-   - FAQ Section: 4-5 high-intent questions answered concisely. (Do NOT generate JSON-LD schema, it consumes too many tokens).
+   - FAQ Section: The article MUST end with a "Frequently Asked Questions" H2 section. Every single question inside the FAQ MUST be formatted as an H3 heading. Answer 4-5 high-intent questions concisely. (Do NOT generate JSON-LD schema, it consumes too many tokens).
 4. Yoast SEO Metadata (STRICT LIMITS):
    - slug: The primary focus keyword formatted as a URL slug (e.g., "primary-keyword-here").
    - focus_keyword: 2-4 words high search volume target keyword.
