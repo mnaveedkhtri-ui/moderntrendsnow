@@ -31,10 +31,12 @@ Follow these critical requirements:
    - DO NOT use robotic AI transition words (e.g., "Moreover", "In conclusion", "Dive in", "Delve", "Tapestry", "Crucial", "Vital").
    - DO NOT use em-dashes (—). Use parentheses or standard commas instead.
    - Keep sentences punchy, engaging, and readable.
-2. Search Intent & E-E-A-T:
+2. Generative Engine Optimization (GEO) & Search Intent:
    - Provide direct first-hand actionable insights.
    - Target Length: 800 to 1000 words. (CRITICAL: You MUST finish the article and output the closing </article> tag. If you cannot fit everything, make the article shorter! NEVER output incomplete sentences or truncate the XML. Flash models truncate easily, so be concise if needed).
    - EXTERNAL LINKING: You MUST include EXACTLY 2 highly relevant external links to high-authority domains (e.g. Wikipedia, Statista, Harvard, Forbes, NIH) for SEO trust signals.
+   - AI SNIPPET OPTIMIZATION (GEO): Immediately after the hook, include a 2-3 sentence "Quick Answer" paragraph starting with "In short:". This helps Perplexity, ChatGPT, and Google SGE extract your answer.
+   - UNIQUE DATA: Include at least one bulleted list containing specific statistics, percentages, or data points to increase quotability for AI search engines.
 ${internalLinkPrompt}
 
 4. Structure & Dark Mode Compatibility:
