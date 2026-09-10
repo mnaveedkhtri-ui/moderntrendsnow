@@ -40,7 +40,7 @@ async function getNextTopicFromSheet() {
 
     // Look for pending rows or keywords that have not been posted
     for (const row of records) {
-      const keyword = (row.Keyword || row.keyword || row.Keywords || row.keywords || row.Topic || row.topic || '').trim();
+      const keyword = (row['Keyword (SEO Topic)'] || row.Keyword || row.keyword || row.Keywords || row.keywords || row.Topic || row.topic || '').trim();
       const category = (row.Category || row.category || 'General').trim();
       const status = (row.Status || row.status || '').toLowerCase().trim();
 
