@@ -51,10 +51,17 @@ async function fetchImageBuffer(searchQuery, seed = Math.floor(Math.random() * 1
     
     if (primaryRes.data && primaryRes.data.length > 5000) {
       console.log(`[IMAGE] AI Image generated, maintaining native crisp resolution...`);
-      // Use extract to cut a 1024x576 window out of the center.
-      // Top offset: (1024 - 576) / 2 = 224.
-      const processedBuffer = await sharp(Buffer.from(primaryRes.data))
-        .extract({ left: 0, top: 224, width: 1024, height: 576 })
+      // Dynamic extraction to perfectly crop center to 16:9 regardless of AI output size
+      const imageBuffer = Buffer.from(primaryRes.data);
+      const metadata = await sharp(imageBuffer).metadata();
+      const actualWidth = metadata.width;
+      const actualHeight = metadata.height;
+      
+      const targetHeight = Math.floor(actualWidth * (9 / 16));
+      const topOffset = Math.floor((actualHeight - targetHeight) / 2);
+      
+      const processedBuffer = await sharp(imageBuffer)
+        .extract({ left: 0, top: topOffset, width: actualWidth, height: targetHeight })
         .jpeg({ quality: 100, chromaSubsampling: '4:4:4' })
         .toBuffer();
         
