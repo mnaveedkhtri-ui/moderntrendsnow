@@ -46,8 +46,8 @@ ${internalLinkPrompt}
    - Structure: 4 to 5 logical main sections with H2 tags. Use nested H3 tags inside these sections for deep SEO structure. Include bulleted lists and data breakdown tables.
    - DARK MODE: Do NOT use hardcoded inline colors (e.g., style="color: #000" or style="background: white") in tables, divs, or any HTML. Ensure all elements are transparent/inherit by default to support website dark mode.
    - EXACTLY 2 COMPLETELY DISTINCT In-Article Image Placeholders under different H2 headings, formatted exactly as:
-     <!-- IN_ARTICLE_IMAGE: {"keyword": "A highly detailed, ultra-realistic 8k professional macro photography shot of [specific objects], shot on 35mm lens, sharp focus, magazine quality, bright lighting...", "alt": "Descriptive keyword-rich alt text", "caption": "Engaging descriptive caption"} -->
-     (CRITICAL: The 'keyword' must be an extremely detailed prompt for a high-end photography camera. DO NOT prompt for crowds, human faces, or illustrations. Focus on photorealistic objects, premium environments, and macro photography. Do NOT generate dark rooms).
+     <!-- IN_ARTICLE_IMAGE: {"keyword": "short descriptive keyword", "alt": "Descriptive keyword-rich alt text", "caption": "Engaging descriptive caption"} -->
+     (CRITICAL: The 'keyword' must be ONLY 2 or 3 words max, suitable for a stock photo search engine like Pixabay. E.g., "laptop coffee", "student studying", "money growth".)
    - Conclusion: You MUST include a strong H2 Conclusion section wrapping up the article. This MUST be placed BEFORE the FAQ section.
    - FAQ Section: The article MUST end with a "Frequently Asked Questions" H2 section. Every single question inside the FAQ MUST be formatted as an H3 heading. Answer 4-5 high-intent questions concisely. (Do NOT generate JSON-LD schema, it consumes too many tokens).
 4. Yoast SEO Metadata (STRICT LIMITS):
@@ -56,7 +56,7 @@ ${internalLinkPrompt}
    - meta_title: STRICTLY UNDER 60 CHARACTERS.
    - meta_description: STRICTLY UNDER 150 CHARACTERS.
    - tags: Array of 5-8 relevant tags (comma separated).
-   - featured_image_prompt: A highly detailed, professional photography prompt for a magazine-quality cover photo matching the topic.
+   - featured_image_prompt: A 2-3 word keyword phrase for a stock photo search (e.g. "business meeting").
    - featured_image_alt: Keyword alt text for cover.
 
 Respond ONLY with the following XML structure. Do NOT output markdown formatting like \`\`\`xml.

@@ -33,16 +33,42 @@ async function processImage(buffer) {
  * Uses multiple reliable photo engines with unique seeds to ensure NO DUPLICATES
  */
 async function fetchImageBuffer(searchQuery, seed = Math.floor(Math.random() * 1000000)) {
-  // Use Pollinations AI for highly relevant, context-aware images
-  const enhancedQuery = `${searchQuery}, 8k resolution, ultra detailed, sharp focus, photorealistic, cinematic lighting`;
-  const query = encodeURIComponent(enhancedQuery.substring(0, 800)); 
+  const PIXABAY_KEY = '57489676-b13e0fe261e37ca2f22f32abb';
   
-  // Request 1024x1024 (Square) to guarantee the highest quality AI generation.
-  // Our sharp processor will cleanly CROP the top and bottom to make it 1024x576 (16:9).
-  const primaryUrl = `https://image.pollinations.ai/prompt/${query}?width=1024&height=1024&model=flux&seed=${seed}&nologo=true`;
-
-  console.log(`[IMAGE] Generating AI Image via Pollinations for perfect context match...`);
+  // Try Pixabay first for 100% REAL, ultra-sharp 16:9 photography
   try {
+    const cleanSearch = cleanQuery(searchQuery).replace(/[^a-zA-Z0-9\s]/g, '').trim();
+    const keywords = cleanSearch.split(' ').slice(0, 3).join('+'); // 3 words max for better results
+    const pixabayUrl = `https://pixabay.com/api/?key=${PIXABAY_KEY}&q=${keywords}&image_type=photo&orientation=horizontal&min_width=1280&safesearch=true&per_page=10`;
+    
+    console.log(`[IMAGE] Fetching 100% REAL professional photo from Pixabay for: "${keywords}"`);
+    const pixRes = await axios.get(pixabayUrl, { timeout: 15000 });
+    
+    if (pixRes.data && pixRes.data.hits && pixRes.data.hits.length > 0) {
+      // Pick a random image from the top 10 results
+      const hit = pixRes.data.hits[Math.floor(Math.random() * Math.min(10, pixRes.data.hits.length))];
+      const imageUrl = hit.largeImageURL;
+      
+      console.log(`[IMAGE] Downloading High-Res Pixabay Image...`);
+      const imgRes = await axios.get(imageUrl, { responseType: 'arraybuffer', timeout: 30000 });
+      
+      // Process it through sharp just to ensure perfect 1280x720 crop and compression
+      const processedBuffer = await processImage(Buffer.from(imgRes.data));
+      return {
+        buffer: processedBuffer,
+        contentType: 'image/jpeg'
+      };
+    }
+  } catch (err) {
+    console.warn(`[IMAGE] Pixabay failed or no results found, trying fallback...`);
+  }
+
+  // Fallback to Native Pollinations (No cropping, No upscaling)
+  try {
+    const query = encodeURIComponent(searchQuery.substring(0, 800)); 
+    const primaryUrl = `https://image.pollinations.ai/prompt/${query}?width=1024&height=576&model=flux&seed=${seed}&nologo=true`;
+
+    console.log(`[IMAGE] Generating AI fallback via Pollinations natively...`);
     const primaryRes = await axios.get(primaryUrl, {
       responseType: 'arraybuffer',
       timeout: 60000, 
@@ -50,19 +76,10 @@ async function fetchImageBuffer(searchQuery, seed = Math.floor(Math.random() * 1
     });
     
     if (primaryRes.data && primaryRes.data.length > 5000) {
-      console.log(`[IMAGE] AI Image generated, maintaining native crisp resolution...`);
-      // Dynamic extraction to perfectly crop center to 16:9 regardless of AI output size
-      const imageBuffer = Buffer.from(primaryRes.data);
-      const metadata = await sharp(imageBuffer).metadata();
-      const actualWidth = metadata.width;
-      const actualHeight = metadata.height;
-      
-      const targetHeight = Math.floor(actualWidth * (9 / 16));
-      const topOffset = Math.floor((actualHeight - targetHeight) / 2);
-      
-      const processedBuffer = await sharp(imageBuffer)
-        .extract({ left: 0, top: topOffset, width: actualWidth, height: targetHeight })
-        .jpeg({ quality: 100, chromaSubsampling: '4:4:4' })
+      console.log(`[IMAGE] AI Fallback generated!`);
+      // NO UPSCALING. Just save as 1024x576 natively.
+      const processedBuffer = await sharp(Buffer.from(primaryRes.data))
+        .jpeg({ quality: 100 })
         .toBuffer();
         
       return {
@@ -70,9 +87,7 @@ async function fetchImageBuffer(searchQuery, seed = Math.floor(Math.random() * 1
         contentType: 'image/jpeg'
       };
     }
-  } catch (primaryErr) {
-    console.warn(`[IMAGE] Pollinations failed for "${searchQuery}", trying fallback...`);
-  }
+  } catch (primaryErr) {}
 
   // Engine 2: Picsum Fallback (Random High Quality 16:9 Professional Photo)
   try {
