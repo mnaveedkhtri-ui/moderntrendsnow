@@ -37,9 +37,9 @@ async function fetchImageBuffer(searchQuery, seed = Math.floor(Math.random() * 1
   const enhancedQuery = `${searchQuery}, 8k resolution, ultra detailed, sharp focus, photorealistic, cinematic lighting`;
   const query = encodeURIComponent(enhancedQuery.substring(0, 800)); 
   
-  // Request 1024x1024 (Square) to prevent the AI from squashing/stretching the image.
-  // Our sharp processor will then cleanly crop it to 1280x720 (16:9).
-  const primaryUrl = `https://image.pollinations.ai/prompt/${query}?width=1024&height=576&model=flux&seed=${seed}&nologo=true`;
+  // Request 1024x1024 (Square) to guarantee the highest quality AI generation.
+  // Our sharp processor will cleanly CROP the top and bottom to make it 1024x576 (16:9).
+  const primaryUrl = `https://image.pollinations.ai/prompt/${query}?width=1024&height=1024&model=flux&seed=${seed}&nologo=true`;
 
   console.log(`[IMAGE] Generating AI Image via Pollinations for perfect context match...`);
   try {
@@ -51,9 +51,10 @@ async function fetchImageBuffer(searchQuery, seed = Math.floor(Math.random() * 1
     
     if (primaryRes.data && primaryRes.data.length > 5000) {
       console.log(`[IMAGE] AI Image generated, maintaining native crisp resolution...`);
-      // DO NOT UPSCALE to 1280. Keep it at the native 1024x576 (which is perfect 16:9) to prevent digital blur.
+      // Use extract to cut a 1024x576 window out of the center.
+      // Top offset: (1024 - 576) / 2 = 224.
       const processedBuffer = await sharp(Buffer.from(primaryRes.data))
-        .resize({ width: 1024, height: 576, fit: 'cover', position: 'center' })
+        .extract({ left: 0, top: 224, width: 1024, height: 576 })
         .jpeg({ quality: 100, chromaSubsampling: '4:4:4' })
         .toBuffer();
         
